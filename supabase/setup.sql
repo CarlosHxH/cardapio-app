@@ -51,6 +51,11 @@ CREATE POLICY "pedidos_select_admin"
   ON public.pedidos FOR SELECT
   USING (auth.role() = 'authenticated');
 
+-- Pedidos: leitura pública (página /pedidos sem login)
+CREATE POLICY "pedidos_select_publico"
+  ON public.pedidos FOR SELECT
+  USING (true);
+
 CREATE POLICY "pedidos_update_admin"
   ON public.pedidos FOR UPDATE
   USING (auth.role() = 'authenticated');

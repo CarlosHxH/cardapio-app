@@ -1,11 +1,12 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useCardapio } from '../hooks/useCardapio'
 import { enviarPedido } from '../hooks/usePedidos'
 import { formatBRL } from '../lib/utils'
 import type { CartItem } from '../types'
 import {
   UtensilsCrossed, Plus, Minus, ShoppingBag, Send,
-  ChevronDown, AlertCircle, CheckCircle2, HelpCircle, X
+  ChevronDown, AlertCircle, CheckCircle2, HelpCircle, X, ClipboardList
 } from 'lucide-react'
 
 export default function ClientePage() {
@@ -82,7 +83,9 @@ export default function ClientePage() {
       {/* Header */}
       <header className="bg-brand-700 text-white sticky top-0 z-40 shadow-md">
         <div className="max-w-md mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="w-9" />
+          <button onClick={() => setAjuda(true)} className="w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 transition flex items-center justify-center">
+            <HelpCircle className="w-4 h-4" />
+          </button>
           <div className="flex flex-col items-center">
             <div className="flex items-center gap-2">
               <UtensilsCrossed className="w-5 h-5" />
@@ -90,9 +93,9 @@ export default function ClientePage() {
             </div>
             <p className="text-xs text-brand-200 mt-0.5">Cardápio do Dia</p>
           </div>
-          <button onClick={() => setAjuda(true)} className="w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 transition flex items-center justify-center">
-            <HelpCircle className="w-4 h-4" />
-          </button>
+          <Link to="/pedidos" title="Pedidos do dia" className="w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 transition flex items-center justify-center">
+            <ClipboardList className="w-4 h-4" />
+          </Link>
         </div>
       </header>
 
@@ -100,7 +103,12 @@ export default function ClientePage() {
         {success && (
           <div className="flex items-center gap-3 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 animate-slide-in">
             <CheckCircle2 className="w-5 h-5 shrink-0 text-emerald-600" />
-            <p className="text-sm font-semibold">Pedido enviado! O restaurante já recebeu. 🎉</p>
+            <div>
+              <p className="text-sm font-semibold">Pedido enviado! O restaurante já recebeu. 🎉</p>
+              <Link to="/pedidos" className="text-xs text-emerald-700 underline mt-0.5 inline-block hover:text-emerald-900">
+                Ver todos os pedidos de hoje →
+              </Link>
+            </div>
           </div>
         )}
 

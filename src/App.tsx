@@ -1,8 +1,9 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './hooks/useAuth'
-import ClientePage from './pages/ClientePage'
-import AdminPage   from './pages/AdminPage'
-import LoginPage   from './pages/LoginPage'
+import ClientePage    from './pages/ClientePage'
+import AdminPage      from './pages/AdminPage'
+import LoginPage      from './pages/LoginPage'
+import PedidosDiaPage from './pages/PedidosDiaPage'
 
 export default function App() {
   const { user, loading } = useAuth()
@@ -18,9 +19,10 @@ export default function App() {
 
   return (
     <Routes>
-      <Route path="/"      element={<ClientePage />} />
-      <Route path="/login" element={user ? <Navigate to="/admin" replace /> : <LoginPage />} />
-      <Route path="/admin" element={user ? <AdminPage /> : <Navigate to="/login" replace />} />
+      <Route path="/"        element={<ClientePage />} />
+      <Route path="/pedidos" element={<PedidosDiaPage />} />
+      <Route path="/login"   element={user ? <Navigate to="/admin" replace /> : <LoginPage />} />
+      <Route path="/admin"   element={user ? <AdminPage /> : <Navigate to="/login" replace />} />
     </Routes>
   )
 }
