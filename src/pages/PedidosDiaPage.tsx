@@ -45,7 +45,7 @@ export default function PedidosDiaPage() {
           </div>
         </div>
 
-        <div className="rounded-xl border bg-white border-stone-200 p-3 text-center w-32 shadow-sm">
+        <div className="rounded-xl border bg-white border-stone-200 p-3 text-center sm:w-32 shadow-sm">
           <p className="text-2xl font-black text-stone-800">{loading ? '—' : pedidos.length}</p>
           <p className="text-xs font-semibold mt-0.5 text-stone-500">Pedidos</p>
         </div>

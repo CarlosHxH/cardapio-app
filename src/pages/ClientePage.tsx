@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useCardapio } from '../hooks/useCardapio'
 import { enviarPedido } from '../hooks/usePedidos'
@@ -21,6 +21,11 @@ export default function ClientePage() {
   const [sending, setSending]           = useState(false)
   const [success, setSuccess]           = useState(false)
   const [error, setError]               = useState('')
+
+  useEffect(() => {
+    document.body.style.overflow = ajuda ? 'hidden' : ''
+    return () => { document.body.style.overflow = '' }
+  }, [ajuda])
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center">
