@@ -30,6 +30,11 @@ CREATE TABLE IF NOT EXISTS public.pedidos (
 -- Índice para filtrar pedidos por data (consulta mais comum)
 CREATE INDEX IF NOT EXISTS idx_pedidos_data ON public.pedidos (data DESC);
 
+-- Constraints de integridade
+ALTER TABLE public.pedidos
+  ADD CONSTRAINT pedidos_total_positivo CHECK (total >= 0),
+  ADD CONSTRAINT pedidos_itens_nao_vazio CHECK (jsonb_array_length(itens) > 0);
+
 -- ── 3. ROW LEVEL SECURITY ────────────────────────────────
 ALTER TABLE public.cardapio ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.pedidos  ENABLE ROW LEVEL SECURITY;
