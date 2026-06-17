@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useCardapio } from '../hooks/useCardapio'
 import { enviarPedido } from '../hooks/usePedidos'
 import { formatBRL } from '../lib/utils'
+import { getDadosUsuario, salvarDadosUsuario } from '../lib/userStorage'
 import type { CartItem } from '../types'
 import {
   UtensilsCrossed, Plus, Minus, ShoppingBag, Send,
@@ -14,8 +15,8 @@ export default function ClientePage() {
   const [cart, setCart]                 = useState<CartItem[]>([])
   const [marmitaIdx, setMarmitaIdx]     = useState(0)
   const [marmitaOpcao, setMarmitaOpcao] = useState<'Opção 1' | 'Opção 2'>('Opção 1')
-  const [clienteNome, setClienteNome]   = useState('')
-  const [setor, setSetor]               = useState('')
+  const [clienteNome, setClienteNome]   = useState(() => getDadosUsuario().clienteNome)
+  const [setor, setSetor]               = useState(() => getDadosUsuario().setor)
   const [ajuda, setAjuda]               = useState(false)
   const [cartOpen, setCartOpen]         = useState(false)
   const [sending, setSending]           = useState(false)
@@ -67,11 +68,10 @@ export default function ClientePage() {
     setSending(true)
     try {
       await enviarPedido({ clienteNome: clienteNome.trim(), setor: setor.trim(), itens: cart, total })
+      salvarDadosUsuario({ clienteNome: clienteNome.trim(), setor: setor.trim() })
       setSuccess(true)
       setCart([])
       setCartOpen(false)
-      setClienteNome('')
-      setSetor('')
       setTimeout(() => setSuccess(false), 5000)
     } catch (e: any) {
       setError(e.message || 'Erro ao enviar. Tente novamente.')
