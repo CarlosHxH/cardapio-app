@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useCardapio } from '../hooks/useCardapio'
+import { useCart } from '../hooks/useCart'
 import { enviarPedido } from '../hooks/usePedidos'
 import { formatBRL } from '../lib/utils'
 import { getDadosUsuario, salvarDadosUsuario } from '../lib/userStorage'
-import type { CartItem } from '../types'
 import {
   UtensilsCrossed, Plus, Minus, ShoppingBag, Send,
   ChevronDown, AlertCircle, CheckCircle2, HelpCircle, X, ClipboardList
@@ -12,7 +12,7 @@ import {
 
 export default function ClientePage() {
   const { cardapio, loading } = useCardapio()
-  const [cart, setCart]                 = useState<CartItem[]>([])
+  const { cart, total, totalQtd, addItem, removeItem, qtd, clear } = useCart()
   const [marmitaIdx, setMarmitaIdx]     = useState(0)
   const [marmitaOpcao, setMarmitaOpcao] = useState<'Opção 1' | 'Opção 2'>('Opção 1')
   const [clienteNome, setClienteNome]   = useState(() => getDadosUsuario().clienteNome)
@@ -34,27 +34,6 @@ export default function ClientePage() {
     </div>
   )
 
-  const total    = cart.reduce((s, i) => s + i.preco * i.qtd, 0)
-  const totalQtd = cart.reduce((s, i) => s + i.qtd, 0)
-
-  function addItem(nome: string, preco: number, detalhe?: string) {
-    setCart(prev => {
-      const ex = prev.find(i => i.nome === nome && i.detalhe === detalhe)
-      if (ex) return prev.map(i => i.nome === nome && i.detalhe === detalhe ? { ...i, qtd: i.qtd+1 } : i)
-      return [...prev, { nome, preco, qtd: 1, detalhe }]
-    })
-  }
-  function removeItem(nome: string, detalhe?: string) {
-    setCart(prev => {
-      const ex = prev.find(i => i.nome === nome && i.detalhe === detalhe)
-      if (!ex) return prev
-      if (ex.qtd === 1) return prev.filter(i => !(i.nome === nome && i.detalhe === detalhe))
-      return prev.map(i => i.nome === nome && i.detalhe === detalhe ? { ...i, qtd: i.qtd-1 } : i)
-    })
-  }
-  function qtd(nome: string, detalhe?: string) {
-    return cart.find(i => i.nome === nome && i.detalhe === detalhe)?.qtd ?? 0
-  }
   function addMarmita() {
     const m = cardapio.marmitas[marmitaIdx]
     if (m) addItem(`Marmita ${m.tamanho}`, m.preco, marmitaOpcao)
@@ -70,7 +49,7 @@ export default function ClientePage() {
       await enviarPedido({ clienteNome: clienteNome.trim(), setor: setor.trim(), itens: cart, total })
       salvarDadosUsuario({ clienteNome: clienteNome.trim(), setor: setor.trim() })
       setSuccess(true)
-      setCart([])
+      clear()
       setCartOpen(false)
       setTimeout(() => setSuccess(false), 5000)
     } catch (e: any) {
