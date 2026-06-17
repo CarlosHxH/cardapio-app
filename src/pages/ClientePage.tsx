@@ -6,9 +6,10 @@ import { enviarPedido } from '../hooks/usePedidos'
 import { formatBRL } from '../lib/utils'
 import { getDadosUsuario, salvarDadosUsuario } from '../lib/userStorage'
 import ModalHelpMe from '../components/ModalHelpMe'
+import ItemList from '../components/ItemList'
 import {
   UtensilsCrossed, Plus, Minus, ShoppingBag, Send,
-  ChevronDown, AlertCircle, CheckCircle2, HelpCircle, ClipboardList
+  ChevronDown, ChevronUp, AlertCircle, CheckCircle2, HelpCircle, ClipboardList
 } from 'lucide-react'
 
 export default function ClientePage() {
@@ -18,6 +19,11 @@ export default function ClientePage() {
   const [marmitaOpcao, setMarmitaOpcao] = useState<'Opção 1' | 'Opção 2'>('Opção 1')
   const [clienteNome, setClienteNome]   = useState(() => getDadosUsuario().clienteNome)
   const [setor, setSetor]               = useState(() => getDadosUsuario().setor)
+  // Recolhe "Seus Dados" se já houver dados salvos; expande se for o 1º acesso
+  const [dadosAbertos, setDadosAbertos] = useState(() => {
+    const d = getDadosUsuario()
+    return !d.clienteNome && !d.setor
+  })
   const [ajuda, setAjuda]               = useState(false)
   const [cartOpen, setCartOpen]         = useState(false)
   const [sending, setSending]           = useState(false)
@@ -94,21 +100,34 @@ export default function ClientePage() {
 
         {/* Dados */}
         <section className="bg-white rounded-2xl p-4 shadow-sm border border-stone-100">
-          <h2 className="text-base font-display font-bold text-brand-700 border-b border-stone-100 pb-2 mb-3">Seus Dados</h2>
-          <div className="space-y-3">
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-stone-500 mb-1">Seu Nome</label>
-              <input type="text" value={clienteNome} onChange={e => setClienteNome(e.target.value)}
-                placeholder="Ex: João Silva"
-                className="w-full p-2.5 rounded-xl border border-stone-200 text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition" />
+          <button onClick={() => setDadosAbertos(o => !o)}
+            className={`w-full flex items-center justify-between text-left ${dadosAbertos ? 'border-b border-stone-100 pb-2 mb-3' : ''}`}>
+            <div className="flex flex-col">
+              <h2 className="text-base font-display font-bold text-brand-700">Seus Dados</h2>
+              {!dadosAbertos && (clienteNome || setor) && (
+                <p className="text-xs text-stone-400 mt-0.5">{[clienteNome, setor].filter(Boolean).join(' · ')}</p>
+              )}
             </div>
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-stone-500 mb-1">Setor</label>
-              <input type="text" value={setor} onChange={e => setSetor(e.target.value)}
-                placeholder="Ex: GESIS, SESP, TI..."
-                className="w-full p-2.5 rounded-xl border border-stone-200 text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition" />
+            {dadosAbertos
+              ? <ChevronUp className="w-4 h-4 text-stone-400 shrink-0" />
+              : <ChevronDown className="w-4 h-4 text-stone-400 shrink-0" />}
+          </button>
+          {dadosAbertos && (
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-stone-500 mb-1">Seu Nome</label>
+                <input type="text" value={clienteNome} onChange={e => setClienteNome(e.target.value)}
+                  placeholder="Ex: João Silva"
+                  className="w-full p-2.5 rounded-xl border border-stone-200 text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition" />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-stone-500 mb-1">Setor</label>
+                <input type="text" value={setor} onChange={e => setSetor(e.target.value)}
+                  placeholder="Ex: GESIS, SESP, TI..."
+                  className="w-full p-2.5 rounded-xl border border-stone-200 text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition" />
+              </div>
             </div>
-          </div>
+          )}
         </section>
 
         {/* Menu */}
@@ -222,43 +241,7 @@ export default function ClientePage() {
       </div>
 
       {/* Modal Ajuda */}
-      {ajuda && <ModalHelpMe onClose={() => setAjuda(false)} />}
-    </div>
-  )
-}
-
-function ItemList({ items, onAdd, onRemove, getQtd }: {
-  items: { nome: string; preco: number }[]
-  onAdd: (n: string, p: number) => void
-  onRemove: (n: string) => void
-  getQtd: (n: string) => number
-}) {
-  return (
-    <div className="divide-y divide-stone-100">
-      {items.map(item => {
-        const q = getQtd(item.nome)
-        return (
-          <div key={item.nome} className="flex justify-between items-center py-2.5">
-            <div>
-              <p className="font-medium text-sm text-stone-800">{item.nome}</p>
-              <p className="text-xs text-stone-400">{formatBRL(item.preco)}</p>
-            </div>
-            <div className="flex items-center gap-2">
-              {q > 0 && (
-                <>
-                  <button onClick={() => onRemove(item.nome)} className="w-7 h-7 rounded-full bg-stone-100 hover:bg-stone-200 flex items-center justify-center transition">
-                    <Minus className="w-3 h-3 text-stone-600"/>
-                  </button>
-                  <span className="w-5 text-center text-sm font-bold text-stone-700">{q}</span>
-                </>
-              )}
-              <button onClick={() => onAdd(item.nome, item.preco)} className="w-7 h-7 rounded-full bg-brand-50 hover:bg-brand-100 text-brand-700 flex items-center justify-center transition">
-                <Plus className="w-3.5 h-3.5"/>
-              </button>
-            </div>
-          </div>
-        )
-      })}
+      <ModalHelpMe isOpen={ajuda} onClose={() => setAjuda(false)} />
     </div>
   )
 }
