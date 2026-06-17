@@ -1,13 +1,14 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useCardapio } from '../hooks/useCardapio'
 import { useCart } from '../hooks/useCart'
 import { enviarPedido } from '../hooks/usePedidos'
 import { formatBRL } from '../lib/utils'
 import { getDadosUsuario, salvarDadosUsuario } from '../lib/userStorage'
+import ModalHelpMe from '../components/ModalHelpMe'
 import {
   UtensilsCrossed, Plus, Minus, ShoppingBag, Send,
-  ChevronDown, AlertCircle, CheckCircle2, HelpCircle, X, ClipboardList
+  ChevronDown, AlertCircle, CheckCircle2, HelpCircle, ClipboardList
 } from 'lucide-react'
 
 export default function ClientePage() {
@@ -22,11 +23,6 @@ export default function ClientePage() {
   const [sending, setSending]           = useState(false)
   const [success, setSuccess]           = useState(false)
   const [error, setError]               = useState('')
-
-  useEffect(() => {
-    document.body.style.overflow = ajuda ? 'hidden' : ''
-    return () => { document.body.style.overflow = '' }
-  }, [ajuda])
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center">
@@ -226,33 +222,7 @@ export default function ClientePage() {
       </div>
 
       {/* Modal Ajuda */}
-      {ajuda && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md flex flex-col max-h-[85vh]">
-            <div className="p-4 border-b flex items-center justify-between">
-              <h2 className="font-display font-bold text-lg text-brand-700">Como usar</h2>
-              <button onClick={() => setAjuda(false)}><X className="w-5 h-5 text-stone-400"/></button>
-            </div>
-            <div className="p-5 overflow-y-auto space-y-4 text-sm text-stone-600">
-              {[
-                {n:'1',t:'Preencha seus dados',d:'Informe seu nome e o setor onde trabalha.'},
-                {n:'2',t:'Veja o menu do dia', d:'Confira as opções disponíveis.'},
-                {n:'3',t:'Monte sua marmita', d:'Escolha o tamanho e opção (1 ou 2) e clique em Adicionar.'},
-                {n:'4',t:'Extras e bebidas',  d:'Use os botões + para incluir adicionais e bebidas.'},
-                {n:'5',t:'Envie o pedido',    d:'Clique em Enviar Pedido. O restaurante recebe na hora!'},
-              ].map(s => (
-                <div key={s.n} className="flex gap-3">
-                  <div className="w-7 h-7 rounded-full bg-brand-100 text-brand-700 font-black flex items-center justify-center shrink-0 text-sm">{s.n}</div>
-                  <div><p className="font-bold text-stone-800 mb-0.5">{s.t}</p><p className="text-stone-500">{s.d}</p></div>
-                </div>
-              ))}
-            </div>
-            <div className="p-4 border-t">
-              <button onClick={() => setAjuda(false)} className="w-full py-2.5 rounded-xl bg-brand-600 text-white font-bold text-sm hover:bg-brand-700 transition">Entendi!</button>
-            </div>
-          </div>
-        </div>
-      )}
+      {ajuda && <ModalHelpMe onClose={() => setAjuda(false)} />}
     </div>
   )
 }
