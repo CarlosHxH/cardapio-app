@@ -1,32 +1,35 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useCardapio } from '../hooks/useCardapio'
+import { useCart } from '../hooks/useCart'
 import { enviarPedido } from '../hooks/usePedidos'
 import { formatBRL } from '../lib/utils'
-import type { CartItem } from '../types'
+import { getDadosUsuario, salvarDadosUsuario } from '../lib/userStorage'
+import ModalHelpMe from '../components/ModalHelpMe'
+import ItemList from '../components/ItemList'
 import {
   UtensilsCrossed, Plus, Minus, ShoppingBag, Send,
-  ChevronDown, AlertCircle, CheckCircle2, HelpCircle, X, ClipboardList
+  ChevronDown, ChevronUp, AlertCircle, CheckCircle2, HelpCircle, ClipboardList
 } from 'lucide-react'
 import { toast } from "sonner"
 
 export default function ClientePage() {
   const { cardapio, loading } = useCardapio()
-  const [cart, setCart]                 = useState<CartItem[]>([])
+  const { cart, total, totalQtd, addItem, removeItem, qtd, clear } = useCart()
   const [marmitaIdx, setMarmitaIdx]     = useState(0)
   const [marmitaOpcao, setMarmitaOpcao] = useState<'Opção 1' | 'Opção 2'>('Opção 1')
-  const [clienteNome, setClienteNome]   = useState('')
-  const [setor, setSetor]               = useState('')
+  const [clienteNome, setClienteNome]   = useState(() => getDadosUsuario().clienteNome)
+  const [setor, setSetor]               = useState(() => getDadosUsuario().setor)
+  // Recolhe "Seus Dados" se já houver dados salvos; expande se for o 1º acesso
+  const [dadosAbertos, setDadosAbertos] = useState(() => {
+    const d = getDadosUsuario()
+    return !d.clienteNome && !d.setor
+  })
   const [ajuda, setAjuda]               = useState(false)
   const [cartOpen, setCartOpen]         = useState(false)
   const [sending, setSending]           = useState(false)
   const [success, setSuccess]           = useState(false)
   const [error, setError]               = useState('')
-
-  useEffect(() => {
-    document.body.style.overflow = ajuda ? 'hidden' : ''
-    return () => { document.body.style.overflow = '' }
-  }, [ajuda])
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center">
@@ -34,27 +37,6 @@ export default function ClientePage() {
     </div>
   )
 
-  const total    = cart.reduce((s, i) => s + i.preco * i.qtd, 0)
-  const totalQtd = cart.reduce((s, i) => s + i.qtd, 0)
-
-  function addItem(nome: string, preco: number, detalhe?: string) {
-    setCart(prev => {
-      const ex = prev.find(i => i.nome === nome && i.detalhe === detalhe)
-      if (ex) return prev.map(i => i.nome === nome && i.detalhe === detalhe ? { ...i, qtd: i.qtd+1 } : i)
-      return [...prev, { nome, preco, qtd: 1, detalhe }]
-    })
-  }
-  function removeItem(nome: string, detalhe?: string) {
-    setCart(prev => {
-      const ex = prev.find(i => i.nome === nome && i.detalhe === detalhe)
-      if (!ex) return prev
-      if (ex.qtd === 1) return prev.filter(i => !(i.nome === nome && i.detalhe === detalhe))
-      return prev.map(i => i.nome === nome && i.detalhe === detalhe ? { ...i, qtd: i.qtd-1 } : i)
-    })
-  }
-  function qtd(nome: string, detalhe?: string) {
-    return cart.find(i => i.nome === nome && i.detalhe === detalhe)?.qtd ?? 0
-  }
   function addMarmita() {
     const m = cardapio.marmitas[marmitaIdx]
     if (m) addItem(`Marmita ${m.tamanho}`, m.preco, marmitaOpcao)
@@ -68,11 +50,10 @@ export default function ClientePage() {
     setSending(true)
     try {
       await enviarPedido({ clienteNome: clienteNome.trim(), setor: setor.trim(), itens: cart, total })
+      salvarDadosUsuario({ clienteNome: clienteNome.trim(), setor: setor.trim() })
       setSuccess(true)
-      setCart([])
+      clear()
       setCartOpen(false)
-      setClienteNome('')
-      setSetor('')
       setTimeout(() => setSuccess(false), 5000)
     } catch (e: any) {
       setError(e.message || 'Erro ao enviar. Tente novamente.')
@@ -131,21 +112,34 @@ export default function ClientePage() {
 
         {/* Dados */}
         <section className="bg-white rounded-2xl p-4 shadow-sm border border-stone-100">
-          <h2 className="text-base font-display font-bold text-brand-700 border-b border-stone-100 pb-2 mb-3">Seus Dados</h2>
-          <div className="space-y-3">
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-stone-500 mb-1">Seu Nome</label>
-              <input type="text" value={clienteNome} onChange={e => setClienteNome(e.target.value)}
-                placeholder="Ex: João Silva"
-                className="w-full p-2.5 rounded-xl border border-stone-200 text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition" />
+          <button onClick={() => setDadosAbertos(o => !o)}
+            className={`w-full flex items-center justify-between text-left ${dadosAbertos ? 'border-b border-stone-100 pb-2 mb-3' : ''}`}>
+            <div className="flex flex-col">
+              <h2 className="text-base font-display font-bold text-brand-700">Seus Dados</h2>
+              {!dadosAbertos && (clienteNome || setor) && (
+                <p className="text-xs text-stone-400 mt-0.5">{[clienteNome, setor].filter(Boolean).join(' · ')}</p>
+              )}
             </div>
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-stone-500 mb-1">Setor</label>
-              <input type="text" value={setor} onChange={e => setSetor(e.target.value)}
-                placeholder="Ex: GESIS, SESP, TI..."
-                className="w-full p-2.5 rounded-xl border border-stone-200 text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition" />
+            {dadosAbertos
+              ? <ChevronUp className="w-4 h-4 text-stone-400 shrink-0" />
+              : <ChevronDown className="w-4 h-4 text-stone-400 shrink-0" />}
+          </button>
+          {dadosAbertos && (
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-stone-500 mb-1">Seu Nome</label>
+                <input type="text" value={clienteNome} onChange={e => setClienteNome(e.target.value)}
+                  placeholder="Ex: João Silva"
+                  className="w-full p-2.5 rounded-xl border border-stone-200 text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition" />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-stone-500 mb-1">Setor</label>
+                <input type="text" value={setor} onChange={e => setSetor(e.target.value)}
+                  placeholder="Ex: GESIS, SESP, TI..."
+                  className="w-full p-2.5 rounded-xl border border-stone-200 text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition" />
+              </div>
             </div>
-          </div>
+          )}
         </section>
 
         {/* Menu */}
@@ -259,69 +253,7 @@ export default function ClientePage() {
       </div>
 
       {/* Modal Ajuda */}
-      {ajuda && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md flex flex-col max-h-[85vh]">
-            <div className="p-4 border-b flex items-center justify-between">
-              <h2 className="font-display font-bold text-lg text-brand-700">Como usar</h2>
-              <button onClick={() => setAjuda(false)}><X className="w-5 h-5 text-stone-400"/></button>
-            </div>
-            <div className="p-5 overflow-y-auto space-y-4 text-sm text-stone-600">
-              {[
-                {n:'1',t:'Preencha seus dados',d:'Informe seu nome e o setor onde trabalha.'},
-                {n:'2',t:'Veja o menu do dia', d:'Confira as opções disponíveis.'},
-                {n:'3',t:'Monte sua marmita', d:'Escolha o tamanho e opção (1 ou 2) e clique em Adicionar.'},
-                {n:'4',t:'Extras e bebidas',  d:'Use os botões + para incluir adicionais e bebidas.'},
-                {n:'5',t:'Envie o pedido',    d:'Clique em Enviar Pedido. O restaurante recebe na hora!'},
-              ].map(s => (
-                <div key={s.n} className="flex gap-3">
-                  <div className="w-7 h-7 rounded-full bg-brand-100 text-brand-700 font-black flex items-center justify-center shrink-0 text-sm">{s.n}</div>
-                  <div><p className="font-bold text-stone-800 mb-0.5">{s.t}</p><p className="text-stone-500">{s.d}</p></div>
-                </div>
-              ))}
-            </div>
-            <div className="p-4 border-t">
-              <button onClick={() => setAjuda(false)} className="w-full py-2.5 rounded-xl bg-brand-600 text-white font-bold text-sm hover:bg-brand-700 transition">Entendi!</button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}
-
-function ItemList({ items, onAdd, onRemove, getQtd }: {
-  items: { nome: string; preco: number }[]
-  onAdd: (n: string, p: number) => void
-  onRemove: (n: string) => void
-  getQtd: (n: string) => number
-}) {
-  return (
-    <div className="divide-y divide-stone-100">
-      {items.map(item => {
-        const q = getQtd(item.nome)
-        return (
-          <div key={item.nome} className="flex justify-between items-center py-2.5">
-            <div>
-              <p className="font-medium text-sm text-stone-800">{item.nome}</p>
-              <p className="text-xs text-stone-400">{formatBRL(item.preco)}</p>
-            </div>
-            <div className="flex items-center gap-2">
-              {q > 0 && (
-                <>
-                  <button onClick={() => onRemove(item.nome)} className="w-7 h-7 rounded-full bg-stone-100 hover:bg-stone-200 flex items-center justify-center transition">
-                    <Minus className="w-3 h-3 text-stone-600"/>
-                  </button>
-                  <span className="w-5 text-center text-sm font-bold text-stone-700">{q}</span>
-                </>
-              )}
-              <button onClick={() => onAdd(item.nome, item.preco)} className="w-7 h-7 rounded-full bg-brand-50 hover:bg-brand-100 text-brand-700 flex items-center justify-center transition">
-                <Plus className="w-3.5 h-3.5"/>
-              </button>
-            </div>
-          </div>
-        )
-      })}
+      <ModalHelpMe isOpen={ajuda} onClose={() => setAjuda(false)} />
     </div>
   )
 }
