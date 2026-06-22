@@ -15,6 +15,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           style: {
             background: 'none',
             border: 'none',
+            boxShadow: 'none',
           },
         }}/>
       </AuthProvider>
