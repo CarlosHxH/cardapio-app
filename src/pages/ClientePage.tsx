@@ -9,9 +9,11 @@ import ModalHelpMe from '../components/ModalHelpMe'
 import ItemList from '../components/ItemList'
 import {
   UtensilsCrossed, Plus, Minus, ShoppingBag, Send,
-  ChevronDown, ChevronUp, AlertCircle, CheckCircle2, HelpCircle, ClipboardList
+  ChevronDown, ChevronUp, AlertCircle, CheckCircle2, HelpCircle, ClipboardList,
+  Bell, BellOff
 } from 'lucide-react'
 import { toast } from "sonner"
+import { usePushNotifications } from '../hooks/usePushNotifications'
 
 export default function ClientePage() {
   const { cardapio, loading } = useCardapio()
@@ -25,6 +27,7 @@ export default function ClientePage() {
     const d = getDadosUsuario()
     return !d.clienteNome && !d.setor
   })
+  const { supported: notifSupported, permission, enabled: notifEnabled, ativar: ativarNotif, desativar: desativarNotif } = usePushNotifications()
   const [ajuda, setAjuda]               = useState(false)
   const [cartOpen, setCartOpen]         = useState(false)
   const [sending, setSending]           = useState(false)
@@ -93,11 +96,35 @@ export default function ClientePage() {
             </div>
             <p className="text-xs text-brand-200 mt-0.5">Cardápio do Dia</p>
           </div>
-          <Link to="/pedidos" title="Pedidos do dia" className="w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 transition flex items-center justify-center">
-            <ClipboardList className="w-4 h-4" />
-          </Link>
+          <div className="flex items-center gap-1">
+            {notifSupported && permission !== 'denied' && (
+              <button
+                onClick={notifEnabled ? desativarNotif : ativarNotif}
+                title={notifEnabled ? 'Desativar notificações' : 'Ativar notificações'}
+                className="w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 transition flex items-center justify-center relative"
+              >
+                {notifEnabled ? <Bell className="w-4 h-4" /> : <BellOff className="w-4 h-4 opacity-60" />}
+                {notifEnabled && (
+                  <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-emerald-400 border border-brand-700" />
+                )}
+              </button>
+            )}
+            <Link to="/pedidos" title="Pedidos do dia" className="w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 transition flex items-center justify-center">
+              <ClipboardList className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
       </header>
+
+      {notifSupported && permission === 'default' && (
+        <div className="bg-brand-50 border-b border-brand-100 px-4 py-2.5 flex items-center gap-3">
+          <Bell className="w-4 h-4 text-brand-600 shrink-0" />
+          <p className="text-xs text-stone-600 flex-1">Quer ser avisado quando o cardápio do dia mudar?</p>
+          <button onClick={ativarNotif} className="text-xs font-bold text-brand-700 hover:text-brand-900 shrink-0">
+            Ativar
+          </button>
+        </div>
+      )}
 
       <main className="max-w-md mx-auto px-4 mt-4 space-y-5 pb-2">
         {/* Dados */}
