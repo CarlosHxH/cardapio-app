@@ -8,6 +8,7 @@ import {
   UtensilsCrossed, Plus, Minus, ShoppingBag, Send,
   ChevronDown, AlertCircle, CheckCircle2, HelpCircle, X, ClipboardList
 } from 'lucide-react'
+import { toast } from "sonner"
 
 export default function ClientePage() {
   const { cardapio, loading } = useCardapio()
@@ -83,6 +84,17 @@ export default function ClientePage() {
   const op1r = cardapio.opcao1.slice(0,2).join(', ')
   const op2r = cardapio.opcao2.slice(0,2).join(', ')
 
+  if(success){
+    toast.success('Pedido enviado! O restaurante já recebeu. 🎉', {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+    })
+  }
+
   return (
     <div className="min-h-screen bg-stone-50">
       {/* Header */}
@@ -105,7 +117,7 @@ export default function ClientePage() {
       </header>
 
       <main className="max-w-md mx-auto px-4 mt-4 space-y-5 pb-2">
-        {success && (
+        {/*success && (
           <div className="flex items-center gap-3 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 animate-slide-in">
             <CheckCircle2 className="w-5 h-5 shrink-0 text-emerald-600" />
             <div>
@@ -115,7 +127,7 @@ export default function ClientePage() {
               </Link>
             </div>
           </div>
-        )}
+        )*/}
 
         {/* Dados */}
         <section className="bg-white rounded-2xl p-4 shadow-sm border border-stone-100">
