@@ -61,7 +61,12 @@ export default function ClientePage() {
               Ver todos os pedidos de hoje →
             </Link>
           </div>
-        </div>
+        </div>,
+        { 
+          duration: 8000,
+          position: 'top-right',
+          style: { maxWidth: '100%', width: 'auto' }
+         }
       )
     } catch (e: any) {
       setError(e.message || 'Erro ao enviar. Tente novamente.')
