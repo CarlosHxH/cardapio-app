@@ -26,7 +26,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-brand-800 via-brand-700 to-brand-900 flex items-center justify-center p-4">
+    <div className="h-screen overflow-y-auto bg-gradient-to-br from-brand-800 via-brand-700 to-brand-900 flex items-center justify-center p-4">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-32 -right-32 w-96 h-96 bg-white/5 rounded-full" />
         <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-white/5 rounded-full" />

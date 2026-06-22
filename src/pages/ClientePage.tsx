@@ -34,7 +34,7 @@ export default function ClientePage() {
   const [error, setError]               = useState('')
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="h-screen flex items-center justify-center bg-stone-50">
       <div className="w-8 h-8 border-4 border-brand-600 border-t-transparent rounded-full animate-spin" />
     </div>
   )
@@ -82,7 +82,7 @@ export default function ClientePage() {
   const op2r = cardapio.opcao2.slice(0,2).join(', ')
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="h-screen overflow-y-auto bg-stone-50">
       {/* Header */}
       <header className="bg-brand-700 text-white sticky top-0 z-40 shadow-md">
         <div className="max-w-md mx-auto px-4 py-4 flex items-center justify-between">

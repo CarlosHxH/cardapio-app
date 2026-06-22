@@ -13,7 +13,7 @@ export default function AdminPage() {
   const [tab, setTab] = useState<Tab>('pedidos')
 
   return (
-    <div className="min-h-screen bg-stone-100">
+    <div className="h-screen overflow-y-auto bg-stone-100">
       <header className="sticky top-0 z-40 text-white shadow-md bg-brand-700">
         <div className="flex items-center justify-between max-w-2xl px-4 py-3 mx-auto">
           <div className="flex items-center gap-2">
