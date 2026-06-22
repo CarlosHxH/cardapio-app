@@ -11,7 +11,11 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
       <AuthProvider>
         <App />
-        <Toaster />
+        <Toaster toastOptions={{
+          style: {
+            background: 'none',
+          },
+        }}/>
       </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>
