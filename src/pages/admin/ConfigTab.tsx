@@ -57,11 +57,6 @@ export default function ConfigTab() {
           </button>
         </form>
       </div>
-
-      <div className="p-4 text-sm text-blue-800 border border-blue-200 bg-blue-50 rounded-2xl">
-        <p className="mb-1 font-semibold">ℹ️ Supabase Auth</p>
-        <p className="text-xs leading-relaxed text-blue-600">A senha é gerenciada diretamente pelo Supabase Authentication. Você também pode redefinir pelo painel do Supabase em Authentication → Users.</p>
-      </div>
     </div>
   )
 }
