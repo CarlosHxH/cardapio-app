@@ -219,6 +219,12 @@ export default function ClientePage() {
           <h2 className="text-base font-display font-bold text-brand-700 border-b border-stone-100 pb-2 mb-1">Bebidas</h2>
           <ItemList items={cardapio.bebidas} onAdd={(n,p)=>addItem(n,p)} onRemove={n=>removeItem(n)} getQtd={n=>qtd(n)} />
         </section>
+
+        <div className="pb-24 flex justify-center">
+          <Link to="/login" className="text-[11px] text-stone-300 hover:text-stone-400 transition">
+            Área administrativa
+          </Link>
+        </div>
       </main>
 
       {/* Cart Bar */}
