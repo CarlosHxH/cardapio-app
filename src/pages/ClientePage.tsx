@@ -28,7 +28,6 @@ export default function ClientePage() {
   const [ajuda, setAjuda]               = useState(false)
   const [cartOpen, setCartOpen]         = useState(false)
   const [sending, setSending]           = useState(false)
-  const [success, setSuccess]           = useState(false)
   const [error, setError]               = useState('')
 
   if (loading) return (
@@ -51,10 +50,19 @@ export default function ClientePage() {
     try {
       await enviarPedido({ clienteNome: clienteNome.trim(), setor: setor.trim(), itens: cart, total })
       salvarDadosUsuario({ clienteNome: clienteNome.trim(), setor: setor.trim() })
-      setSuccess(true)
       clear()
       setCartOpen(false)
-      setTimeout(() => setSuccess(false), 5000)
+      toast(
+        <div className="flex items-center gap-3 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800">
+          <CheckCircle2 className="w-5 h-5 shrink-0 text-emerald-600" />
+          <div>
+            <p className="text-sm font-semibold">Pedido enviado! O restaurante já recebeu. 🎉</p>
+            <Link to="/pedidos" className="text-xs text-emerald-700 underline mt-0.5 inline-block hover:text-emerald-900">
+              Ver todos os pedidos de hoje →
+            </Link>
+          </div>
+        </div>
+      )
     } catch (e: any) {
       setError(e.message || 'Erro ao enviar. Tente novamente.')
     } finally {
@@ -64,20 +72,6 @@ export default function ClientePage() {
 
   const op1r = cardapio.opcao1.slice(0,2).join(', ')
   const op2r = cardapio.opcao2.slice(0,2).join(', ')
-
-  if(success){
-    toast(
-      <div className="flex items-center gap-3 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 animate-slide-in">
-        <CheckCircle2 className="w-5 h-5 shrink-0 text-emerald-600" />
-        <div>
-          <p className="text-sm font-semibold">Pedido enviado! O restaurante já recebeu. 🎉</p>
-          <Link to="/pedidos" className="text-xs text-emerald-700 underline mt-0.5 inline-block hover:text-emerald-900">
-            Ver todos os pedidos de hoje →
-          </Link>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-stone-50">
