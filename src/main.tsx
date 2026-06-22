@@ -14,6 +14,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <Toaster toastOptions={{
           style: {
             background: 'none',
+            border: 'none',
           },
         }}/>
       </AuthProvider>
