@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { AuthProvider } from './hooks/useAuth'
 import App from './App'
 import { Toaster } from 'sonner';
+// @ts-ignore: allow importing CSS as a side-effect in environments without CSS module declarations
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -11,13 +12,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
       <AuthProvider>
         <App />
-        <Toaster toastOptions={{
-          style: {
-            background: 'none',
-            border: 'none',
-            boxShadow: 'none',
-          },
-        }}/>
+        <Toaster toastOptions={{ unstyled: true, style: { padding: 0 } }} />
       </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>
