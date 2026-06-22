@@ -66,14 +66,17 @@ export default function ClientePage() {
   const op2r = cardapio.opcao2.slice(0,2).join(', ')
 
   if(success){
-    toast.success('Pedido enviado! O restaurante já recebeu. 🎉', {
-      position: "top-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-    })
+    toast(
+      <div className="flex items-center gap-3 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 animate-slide-in">
+        <CheckCircle2 className="w-5 h-5 shrink-0 text-emerald-600" />
+        <div>
+          <p className="text-sm font-semibold">Pedido enviado! O restaurante já recebeu. 🎉</p>
+          <Link to="/pedidos" className="text-xs text-emerald-700 underline mt-0.5 inline-block hover:text-emerald-900">
+            Ver todos os pedidos de hoje →
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -98,18 +101,6 @@ export default function ClientePage() {
       </header>
 
       <main className="max-w-md mx-auto px-4 mt-4 space-y-5 pb-2">
-        {/*success && (
-          <div className="flex items-center gap-3 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 animate-slide-in">
-            <CheckCircle2 className="w-5 h-5 shrink-0 text-emerald-600" />
-            <div>
-              <p className="text-sm font-semibold">Pedido enviado! O restaurante já recebeu. 🎉</p>
-              <Link to="/pedidos" className="text-xs text-emerald-700 underline mt-0.5 inline-block hover:text-emerald-900">
-                Ver todos os pedidos de hoje →
-              </Link>
-            </div>
-          </div>
-        )*/}
-
         {/* Dados */}
         <section className="bg-white rounded-2xl p-4 shadow-sm border border-stone-100">
           <button onClick={() => setDadosAbertos(o => !o)}
