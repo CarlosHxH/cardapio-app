@@ -29,7 +29,7 @@ export default function ClientePage() {
   })
   const { supported: notifSupported, permission, enabled: notifEnabled, ativar: ativarNotif, desativar: desativarNotif } = usePushNotifications()
   const [ajuda, setAjuda]               = useState(false)
-  const [cartOpen, setCartOpen]         = useState(false)
+  const [cartOpen, setCartOpen]         = useState(true)
   const [sending, setSending]           = useState(false)
   const [error, setError]               = useState('')
 
