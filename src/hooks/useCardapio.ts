@@ -3,8 +3,8 @@ import { supabase } from '../lib/supabase'
 import type { Cardapio } from '../types'
 
 export const DEFAULT_CARDAPIO: Cardapio = {
-  opcao1:    ['Galinhada cuiabana','Farofa de banana','Maionese','Lasanha à bolonhesa','Spaguetti alho e óleo','Feijão carioca'],
-  opcao2:    ['Arroz Branco','Feijão','Bife acebolado ou Frango grelhado','Ovo frito','Batata frita','Macarrão'],
+  opcao1:    [],
+  opcao2:    [],
   marmitas:  [{tamanho:'N: 7',preco:15},{tamanho:'N: 8',preco:18},{tamanho:'N: 9',preco:23}],
   adicionais:[{nome:'Bife',preco:10},{nome:'Frango Grelhado',preco:10},{nome:'Ovo Frito',preco:2}],
   bebidas:   [

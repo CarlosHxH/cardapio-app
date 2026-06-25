@@ -4,7 +4,8 @@ import TabBtn from '../components/admin/TabBtn'
 import PedidosTab from './admin/PedidosTab'
 import CardapioTab from './admin/CardapioTab'
 import ConfigTab from './admin/ConfigTab'
-import { LogOut, UtensilsCrossed, ClipboardList, Settings, Key } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { LogOut, UtensilsCrossed, ClipboardList, Settings, Key, ExternalLink } from 'lucide-react'
 
 type Tab = 'pedidos' | 'cardapio' | 'config'
 
@@ -23,6 +24,9 @@ export default function AdminPage() {
           </div>
           <div className="flex items-center gap-3">
             <span className="hidden text-xs text-brand-200 sm:block">{user?.email}</span>
+            <Link to="/" className="flex items-center gap-1.5 text-sm text-brand-200 hover:text-white transition" title="Ver cardápio">
+              <ExternalLink className="w-4 h-4" />
+            </Link>
             <button onClick={logout} className="flex items-center gap-1.5 text-sm text-brand-200 hover:text-white transition">
               <LogOut className="w-4 h-4" />
             </button>
