@@ -94,13 +94,9 @@ export default function ClientePage() {
               <UtensilsCrossed className="w-5 h-5" />
               <h1 className="text-xl font-display font-black">Tempero Cuiabano</h1>  
             </div>
-            
-            <div className="flex w-full justify-between items-center gap-2">
-              <span className="text-xs text-brand-200 mt-0.5">Cardápio do Dia</span>
-              <span className="text-[10px] text-stone-200">v{__APP_VERSION__}</span>
-            </div>
+            <p className="text-xs text-brand-200 mt-0.5">Cardápio do Dia</p>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex relative items-center gap-1">
             {notifSupported && permission !== 'denied' && (
               <button
                 onClick={notifEnabled ? desativarNotif : ativarNotif}
@@ -116,6 +112,7 @@ export default function ClientePage() {
             <Link to="/pedidos" title="Pedidos do dia" className="w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 transition flex items-center justify-center">
               <ClipboardList className="w-4 h-4" />
             </Link>
+            <span className="text-[10px] absolute bottom-[-16px] right-0 text-stone-200">v{__APP_VERSION__}</span>
           </div>
         </div>
       </header>
