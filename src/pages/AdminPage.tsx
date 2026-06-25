@@ -21,6 +21,7 @@ export default function AdminPage() {
             <UtensilsCrossed className="w-5 h-5" />
             <h1 className="text-lg font-black font-display">Tempero Cuiabano</h1>
             <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full text-brand-100">Admin</span>
+            <span className="text-xs text-brand-300 hidden sm:inline">v{__APP_VERSION__}</span>
           </div>
           <div className="flex items-center gap-3">
             <span className="hidden text-xs text-brand-200 sm:block">{user?.email}</span>

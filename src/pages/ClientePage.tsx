@@ -220,10 +220,11 @@ export default function ClientePage() {
           <ItemList items={cardapio.bebidas} onAdd={(n,p)=>addItem(n,p)} onRemove={n=>removeItem(n)} getQtd={n=>qtd(n)} />
         </section>
 
-        <div className="pb-24 flex justify-center">
+        <div className="pb-24 flex flex-col items-center gap-1">
           <Link to="/login" className="text-[11px] text-stone-300 hover:text-stone-400 transition">
             Área administrativa
           </Link>
+          <span className="text-[10px] text-stone-200">v{__APP_VERSION__}</span>
         </div>
       </main>
 
