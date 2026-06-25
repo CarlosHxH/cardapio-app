@@ -112,7 +112,7 @@ export default function ClientePage() {
             <Link to="/pedidos" title="Pedidos do dia" className="w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 transition flex items-center justify-center">
               <ClipboardList className="w-4 h-4" />
             </Link>
-            <span className="text-[10px] absolute bottom-[-16px] right-[20px] text-stone-200">v{__APP_VERSION__}</span>
+            <span className="text-[10px] absolute bottom-[-16px] right-[5px] text-stone-200">v{__APP_VERSION__}</span>
           </div>
         </div>
       </header>
