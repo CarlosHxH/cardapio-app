@@ -94,7 +94,10 @@ export default function ClientePage() {
               <UtensilsCrossed className="w-5 h-5" />
               <h1 className="text-xl font-display font-black">Tempero Cuiabano</h1>
             </div>
-            <p className="text-xs text-brand-200 mt-0.5">Cardápio do Dia</p>
+            <div className="flex space-between gap-2">
+              <p className="text-xs text-brand-200 mt-0.5">Cardápio do Dia</p>
+              <span className="text-[10px] text-stone-200">v{__APP_VERSION__}</span>
+            </div>
           </div>
           <div className="flex items-center gap-1">
             {notifSupported && permission !== 'denied' && (
@@ -224,7 +227,6 @@ export default function ClientePage() {
           <Link to="/login" className="text-[11px] text-stone-300 hover:text-stone-400 transition">
             Área administrativa
           </Link>
-          <span className="text-[10px] text-stone-200">v{__APP_VERSION__}</span>
         </div>
       </main>
 
