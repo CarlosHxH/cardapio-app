@@ -95,7 +95,7 @@ export default function ClientePage() {
               <h1 className="text-xl font-display font-black">Tempero Cuiabano</h1>  
             </div>
             
-            <div className="flex justify-between gap-2">
+            <div className="flex w-full justify-between items-center gap-2">
               <span className="text-xs text-brand-200 mt-0.5">Cardápio do Dia</span>
               <span className="text-[10px] text-stone-200">v{__APP_VERSION__}</span>
             </div>
