@@ -128,15 +128,16 @@ export function usePedidosHoje(dataSelecionada?: string) {
 export async function buscarDatas(): Promise<{ data: string; total: number }[]> {
   const { data } = await supabase
     .from('pedidos')
-    .select('data')
+    .select('data, itens')
     .order('data', { ascending: false })
 
   if (!data) return []
 
-  // Agrupa por data
+  // Agrupa por data somando a quantidade de itens de cada pedido
   const map = new Map<string, number>()
   for (const row of data) {
-    map.set(row.data, (map.get(row.data) ?? 0) + 1)
+    const qtdItens = (row.itens as CartItem[]).reduce((acc, i) => acc + i.qtd, 0)
+    map.set(row.data, (map.get(row.data) ?? 0) + qtdItens)
   }
 
   return Array.from(map.entries())

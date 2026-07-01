@@ -1,15 +1,16 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { usePedidosPublic } from '../hooks/usePedidosPublic'
-import { formatBRL, formatHora, formatDate, today } from '../lib/utils'
-import type { Pedido } from '../types'
-import { UtensilsCrossed, ClipboardList, ChevronDown, ChevronUp } from 'lucide-react'
+import { formatDate, today } from '../lib/utils'
+import { UtensilsCrossed, ClipboardList } from 'lucide-react'
+import { ModalHistorico } from '../components/ModalHistorico'
+import PedidoCard from '../components/admin/PedidoCard'
+
 
 export default function PedidosDiaPage() {
   const [dataSel, setDataSel] = useState(today())
-  const { pedidos, loading } = usePedidosPublic(dataSel)
+  const { pedidos, totalQtd, loading } = usePedidosPublic(dataSel)
   const [expandedId, setExpandedId] = useState<number | null>(null)
-
   const isHoje = dataSel === today()
 
   return (
@@ -35,19 +36,19 @@ export default function PedidosDiaPage() {
             </p>
           </div>
           <div className="ml-auto">
-            <input
-              type="date"
-              value={dataSel}
-              max={today()}
-              onChange={e => setDataSel(e.target.value)}
-              className="p-2 text-sm border rounded-xl border-stone-200 bg-white focus:ring-2 focus:ring-brand-500 outline-none"
-            />
+            <ModalHistorico dataSel={dataSel} setDataSel={setDataSel} />
           </div>
         </div>
 
-        <div className="rounded-xl border bg-white border-stone-200 p-3 text-center sm:w-32 shadow-sm">
-          <p className="text-2xl font-black text-stone-800">{loading ? '—' : pedidos.length}</p>
-          <p className="text-xs font-semibold mt-0.5 text-stone-500">Pedidos</p>
+        <div className="grid grid-cols-2 gap-2">
+          <div className="rounded-xl border bg-white border-stone-200 p-3 text-center sm:w-32 shadow-sm">
+            <p className="text-2xl font-black text-stone-800">{loading ? '—' : pedidos.length}</p>
+            <p className="text-xs font-semibold mt-0.5 text-stone-500">Pedidos</p>
+          </div>
+          <div className="rounded-xl border bg-white border-stone-200 p-3 text-center sm:w-32 shadow-sm">
+            <p className="text-2xl font-black text-stone-800">{loading ? '—' : totalQtd}</p>
+            <p className="text-xs font-semibold mt-0.5 text-stone-500">Total de marmitas</p>
+          </div>
         </div>
 
         {loading && (
@@ -71,6 +72,7 @@ export default function PedidosDiaPage() {
               <PedidoCard
                 key={p.id}
                 pedido={p}
+                isNovo={false}
                 expanded={expandedId === p.id}
                 onToggle={() => setExpandedId(expandedId === p.id ? null : p.id)}
               />
@@ -78,55 +80,6 @@ export default function PedidosDiaPage() {
           </div>
         )}
       </div>
-    </div>
-  )
-}
-
-function PedidoCard({
-  pedido,
-  expanded,
-  onToggle,
-}: {
-  pedido: Pedido
-  expanded: boolean
-  onToggle: () => void
-}) {
-  const hora = pedido.criado_em ? formatHora(pedido.criado_em) : '--:--'
-
-  return (
-    <div className="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
-      <div
-        className="flex items-center gap-3 px-4 py-3 cursor-pointer select-none"
-        onClick={onToggle}
-      >
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-bold truncate text-stone-800">{pedido.cliente_nome}</p>
-          <p className="text-xs text-stone-500">
-            {pedido.setor} · {hora} · {pedido.itens.length} item(s)
-          </p>
-        </div>
-        <p className="text-sm font-black text-stone-700 shrink-0">{formatBRL(pedido.total)}</p>
-        <span className="text-stone-400">
-          {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-        </span>
-      </div>
-
-      {expanded && (
-        <div className="border-t border-stone-100 px-4 py-3 space-y-1">
-          {pedido.itens.map((item, i) => (
-            <div key={i} className="flex justify-between text-sm">
-              <span className="text-stone-600">
-                {item.qtd}× {item.detalhe ? `${item.nome} ${item.detalhe}` : item.nome}
-              </span>
-              <span className="font-semibold text-stone-700">{formatBRL(item.preco * item.qtd)}</span>
-            </div>
-          ))}
-          <div className="flex justify-between pt-2 text-sm font-black border-t border-stone-100 text-stone-800">
-            <span>Total</span>
-            <span>{formatBRL(pedido.total)}</span>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

@@ -11,6 +11,7 @@ export default function PedidoCard({ pedido, expanded, isNovo, onToggle, onAcao,
   onEditar?: () => void; onExcluir?: () => void
 }) {
   const hora = pedido.criado_em ? formatHora(pedido.criado_em) : '--:--'
+  const totalItens = pedido.itens.reduce((acc, i) => acc + i.qtd, 0)
   const isPendente = pedido.status === 'pendente'
   const corBtn = acaoCor === 'amber' ? 'bg-amber-500 hover:bg-amber-600' : 'bg-emerald-600 hover:bg-emerald-700'
 
@@ -27,7 +28,7 @@ export default function PedidoCard({ pedido, expanded, isNovo, onToggle, onAcao,
         <div className={`w-2 h-2 rounded-full shrink-0 ${isPendente ? 'bg-amber-400' : 'bg-emerald-400'}`} />
         <div className="flex-1 min-w-0">
           <p className="text-sm font-bold truncate text-stone-800">{pedido.cliente_nome}</p>
-          <p className="text-xs text-stone-500">{pedido.setor} · {hora} · {pedido.itens.length} item(s)</p>
+          <p className="text-xs text-stone-500">{pedido.setor} · {hora} · {totalItens} item(s)</p>
         </div>
         <p className="text-sm font-black text-stone-700 shrink-0">{formatBRL(pedido.total)}</p>
         <span className="text-stone-400 no-print">{expanded ? <ChevronUp className="w-4 h-4"/> : <ChevronDown className="w-4 h-4"/>}</span>

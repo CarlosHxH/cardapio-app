@@ -1,21 +1,19 @@
 import { useState, useEffect } from 'react'
-import { usePedidosHoje, buscarDatas } from '../../hooks/usePedidos'
+import { usePedidosHoje } from '../../hooks/usePedidos'
 import { today, formatDate } from '../../lib/utils'
 import { supabase } from '../../lib/supabase'
-import Modal from '../../components/Modal'
 import StatCard from '../../components/admin/StatCard'
 import PedidoCard from '../../components/admin/PedidoCard'
 import EditarPedidoModal from '../../components/admin/EditarPedidoModal'
+import { ModalHistorico } from '../../components/ModalHistorico'
 import type { Pedido } from '../../types'
 import {
   ClipboardList, Printer, CheckCircle2, Clock,
-  Calendar, Wifi, WifiOff,
+  Wifi, WifiOff,
 } from 'lucide-react'
 
 export default function PedidosTab() {
   const [dataSel, setDataSel] = useState(today())
-  const [datas,   setDatas]   = useState<{ data: string; total: number }[]>([])
-  const [showDatas, setShowDatas] = useState(false)
   const [realtimeOk, setRealtimeOk] = useState(true)
 
   const { pedidos, loading, novoIds, marcarVisto, marcarPendente, exportPedidos, editarPedido, excluirPedido, exportRelatorio } = usePedidosHoje(dataSel)
@@ -28,12 +26,6 @@ export default function PedidosTab() {
       .subscribe(status => setRealtimeOk(status === 'SUBSCRIBED'))
     return () => { supabase.removeChannel(ch) }
   }, [])
-
-  async function handleShowDatas() {
-    const d = await buscarDatas()
-    setDatas(d)
-    setShowDatas(true)
-  }
 
   const pendentes = pedidos.filter(p => p.status === 'pendente')
   const vistos    = pedidos.filter(p => p.status === 'visto')
@@ -55,10 +47,7 @@ export default function PedidosTab() {
           </div>
         </div>
         <div className="flex gap-2 ml-auto">
-          <button onClick={handleShowDatas}
-            className="no-print flex items-center gap-1.5 border border-stone-200 text-stone-600 font-semibold text-sm py-2 px-3 rounded-xl hover:bg-stone-50 transition">
-            <Calendar className="w-3.5 h-3.5" /> Histórico
-          </button>
+          <ModalHistorico dataSel={dataSel} setDataSel={setDataSel} />
           <button onClick={exportRelatorio}
             className="flex items-center gap-2 px-2 py-2 text-sm font-semibold text-white transition bg-red-800 shadow-sm no-print hover:bg-red-900 rounded-xl">
             <Printer className="w-4 h-4" /> Relatório
@@ -139,26 +128,6 @@ export default function PedidosTab() {
           onSalvar={editarPedido}
           onFechar={() => setEditandoPedido(null)}
         />
-      )}
-
-      {/* Modal Histórico */}
-      {showDatas && (
-        <Modal
-          size="sm"
-          onClose={() => setShowDatas(false)}
-          title={<h2 className="text-lg font-bold font-display text-stone-800">Histórico</h2>}
-        >
-          {datas.length === 0
-            ? <p className="py-8 text-sm text-center text-stone-400">Nenhum registro.</p>
-            : datas.map(d => (
-              <button key={d.data} onClick={() => { setDataSel(d.data); setShowDatas(false) }}
-                className={`w-full flex justify-between items-center px-4 py-3 hover:bg-stone-50 transition border-b border-stone-100 ${dataSel===d.data?'bg-brand-50':''}`}>
-                <span className="text-sm font-medium capitalize text-stone-700">{formatDate(d.data)}</span>
-                <span className="text-xs text-stone-400 bg-stone-100 px-2 py-0.5 rounded-full">{d.total} pedido(s)</span>
-              </button>
-            ))
-          }
-        </Modal>
       )}
     </div>
   )
