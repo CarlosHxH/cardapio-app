@@ -1,4 +1,5 @@
 /// <reference lib="webworker" />
+import { clientsClaim } from 'workbox-core'
 import { cleanupOutdatedCaches, precacheAndRoute } from 'workbox-precaching'
 import { registerRoute } from 'workbox-routing'
 import { CacheFirst } from 'workbox-strategies'
@@ -8,6 +9,11 @@ declare const self: ServiceWorkerGlobalScope
 
 cleanupOutdatedCaches()
 precacheAndRoute(self.__WB_MANIFEST)
+
+// Ativa a nova versão imediatamente e assume o controle das abas abertas,
+// para que o autoUpdate do PWA aplique a atualização sem esperar fechar tudo
+self.skipWaiting()
+clientsClaim()
 
 // Cache Google Fonts
 registerRoute(

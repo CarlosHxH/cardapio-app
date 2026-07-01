@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
+import { getCardapioCache, setCardapioCache } from '../lib/cardapioStorage'
 import type { Cardapio } from '../types'
 
 export const DEFAULT_CARDAPIO: Cardapio = {
@@ -16,7 +17,8 @@ export const DEFAULT_CARDAPIO: Cardapio = {
 }
 
 export function useCardapio() {
-  const [cardapio, setCardapio] = useState<Cardapio>(DEFAULT_CARDAPIO)
+  // Inicia com o cardápio salvo no localStorage (acesso offline) ou o padrão
+  const [cardapio, setCardapio] = useState<Cardapio>(() => getCardapioCache() ?? DEFAULT_CARDAPIO)
   const [loading,  setLoading]  = useState(true)
 
   useEffect(() => {
@@ -28,8 +30,12 @@ export function useCardapio() {
           .eq('id', 1)
           .single()
 
-        if (data) setCardapio(data as Cardapio)
+        if (data) {
+          setCardapio(data as Cardapio)
+          setCardapioCache(data as Cardapio)
+        }
       } finally {
+        // Offline: mantém o cardápio do cache já carregado no estado
         setLoading(false)
       }
     }
@@ -43,6 +49,7 @@ export function useCardapio() {
       .upsert({ id: 1, ...novo, atualizado_em: new Date().toISOString() })
     if (error) throw new Error(error.message)
     setCardapio(novo)
+    setCardapioCache(novo)
   }
 
   return { cardapio, loading, salvarCardapio }
